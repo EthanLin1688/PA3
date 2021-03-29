@@ -48,7 +48,7 @@ SQtree::SQtree(PNG & imIn, double tol) {
   h = imIn.height();
   stats s(imIn);
   pair<int, int> ul = make_pair(0, 0);
-  root = buildTrees(s, ul, w, h, tol);
+  root = buildTree(s, ul, w, h, tol);
 
 }
 
@@ -94,18 +94,45 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
  * Render SQtree and return the resulting image.
  */
 PNG SQtree::render() {
-  // Your code here.
+
+  if(root == NULL) return;
+    
+  PNG result = new PNG(root.width, width.height);
+
+  return renderHelper(root, result);
+
+}
+
+PNG SQtree::renderHelper(Node *curr, PNG &img) {
+
+  if(curr == NULL) return;
+
+  if(curr->NW == NULL && curr->NE == NULL && curr->SW == NULL && curr->SE == NULL &&){
+    for (int x = curr->upLeft.first; x < curr->upLeft.first + w; x++) {
+      for (int y = curr->upLeft.second; y < curr->upLeft.second + h; y++) {
+          img.getPixel = curr->avg;
+      }
+    }
+    return img;
+  }
+
+  renderHelper(curr->NW);
+  renderHelper(curr->NE);
+  renderHelper(curr->SW);
+  renderHelper(curr->SE);
+
 }
 
 /**
  * Delete allocated memory.
  */
 void SQtree::clear() {
-  // Your code here.
+  clear(root);
+  root = NULL;
 }
 
 void SQtree::copy(const SQtree & other) {
-  // Your code here.
+  root = copy(other.root);
 }
 
 int SQtree::size() {
